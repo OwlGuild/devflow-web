@@ -16,7 +16,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm run build -- --no-lint
+      - run: npm run lint
+      - run: npm run build
       - run: npm test
 
   docker:
