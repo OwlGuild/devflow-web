@@ -16,28 +16,38 @@ const DOT: Record<State, string> = {
   down: 'bg-rose-500',
 };
 
-export function LiveStatus() {
+const PROBE_TIMEOUT_MS = 30_000;
+
+export function LiveStatus({ apiUrl }: { apiUrl: string }) {
   const [state, setState] = useState<State>('loading');
 
   useEffect(() => {
-    let active = true;
-    const base = process.env.NEXT_PUBLIC_API_URL;
-    if (!base) {
+    if (!apiUrl) {
       setState('down');
       return;
     }
-    fetch(`${base}/health/ready/`)
+
+    let active = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
+    const base = apiUrl.replace(/\/+$/, '');
+
+    fetch(`${base}/health/ready/`, { signal: controller.signal })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
       .then((payload) => {
         if (active) setState(payload?.status === 'ok' ? 'ok' : 'down');
       })
       .catch(() => {
         if (active) setState('down');
-      });
+      })
+      .finally(() => clearTimeout(timeout));
+
     return () => {
       active = false;
+      clearTimeout(timeout);
+      controller.abort();
     };
-  }, []);
+  }, [apiUrl]);
 
   return (
     <div
