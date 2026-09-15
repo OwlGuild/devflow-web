@@ -1,4 +1,4 @@
-﻿import { BoardPreview } from '@/components/BoardPreview';
+import { BoardPreview } from '@/components/BoardPreview';
 import { FeatureCard, type Feature } from '@/components/FeatureCard';
 import { LiveStatus } from '@/components/LiveStatus';
 import { SiteHeader } from '@/components/SiteHeader';
@@ -42,6 +42,8 @@ const STATS = [
 ];
 
 export default function Home() {
+  const apiUrl = process.env.DEVFLOW_API_URL ?? '';
+
   return (
     <div className='min-h-screen bg-slate-50 text-slate-900'>
       <SiteHeader />
@@ -59,7 +61,7 @@ export default function Home() {
           </p>
 
           <div className='mt-6 flex flex-wrap items-center gap-3'>
-            <LiveStatus />
+            <LiveStatus apiUrl={apiUrl} />
             <a
               className='rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700'
               href='https://github.com/OwlGuild'
