@@ -7,28 +7,28 @@ const FEATURES: Feature[] = [
   {
     title: 'REST API',
     summary: 'Django 5 and Django REST Framework, deployed and reachable.',
-    detail: 'Liveness and readiness probes, contract tests on every push.',
+    detail: 'Liveness and readiness endpoints with tests, wired into CI on every push.',
     href: 'https://github.com/OwlGuild/devflow-api',
     linkLabel: 'devflow-api',
   },
   {
     title: 'Realtime layer',
-    summary: 'A WebSocket service that pushes board changes as typed frames.',
+    summary: 'A deployed WebSocket service speaking a typed greeting, echo and error protocol.',
     detail: 'Greetings, echo envelopes and explicit error frames, all under test.',
     href: 'https://github.com/OwlGuild/devflow-realtime',
     linkLabel: 'devflow-realtime',
   },
   {
     title: 'Vector search',
-    summary: 'PostgreSQL with pgvector for retrieval over project documents.',
-    detail: 'Paragraph chunking and nearest-neighbour ranking, no extra database.',
+    summary: 'docmind is deployed and healthy; the pgvector search layer comes next.',
+    detail: 'Health probes and CI are live today; chunking and ranking are on the roadmap.',
     href: 'https://github.com/OwlGuild/docmind',
     linkLabel: 'docmind',
   },
   {
     title: 'Quality gates',
-    summary: 'Contract, unit and load checks that fail the build, not production.',
-    detail: 'pytest, vitest, k6, Docker image builds and live smoke checks.',
+    summary: 'Checks that fail the build, not production.',
+    detail: 'pytest, k6 load profiles, Docker image builds and live smoke checks in Actions.',
     href: 'https://github.com/OwlGuild/devflow-qa',
     linkLabel: 'devflow-qa',
   },
@@ -40,6 +40,8 @@ const STATS = [
   { value: 'Frankfurt', label: 'deploy region' },
   { value: 'Every push', label: 'runs CI' },
 ];
+
+export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const apiUrl = process.env.DEVFLOW_API_URL ?? '';
@@ -56,8 +58,7 @@ export default function Home() {
           <h1 className='text-4xl font-bold sm:text-5xl'>DevFlow</h1>
           <p className='mt-4 max-w-2xl text-lg text-slate-600'>
             Team task management built in public: a REST API, a realtime
-            WebSocket layer, vector search and the quality gates that keep all
-            three honest.
+            WebSocket layer and the quality gates that keep them honest.
           </p>
 
           <div className='mt-6 flex flex-wrap items-center gap-3'>
@@ -87,7 +88,7 @@ export default function Home() {
         </section>
 
         <section className='mx-auto max-w-5xl px-6 pb-16'>
-          <h2 className='mb-6 text-xl font-semibold'>What ships today</h2>
+          <h2 className='mb-6 text-xl font-semibold'>The building blocks</h2>
           <div className='grid gap-4 md:grid-cols-2'>
             {FEATURES.map((feature) => (
               <FeatureCard key={feature.title} {...feature} />
