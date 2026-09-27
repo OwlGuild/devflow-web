@@ -2,28 +2,31 @@
 
 import { useEffect, useState } from 'react';
 
-type State = 'loading' | 'ok' | 'down';
+type State = 'loading' | 'ok' | 'down' | 'unconfigured';
 
 const LABELS: Record<State, string> = {
   loading: 'Checking API…',
   ok: 'API live · database up',
   down: 'API unreachable',
+  unconfigured: 'API status not configured',
 };
 
 const DOT: Record<State, string> = {
   loading: 'bg-amber-400',
   ok: 'bg-emerald-500',
   down: 'bg-rose-500',
+  unconfigured: 'bg-slate-400',
 };
 
 const PROBE_TIMEOUT_MS = 30_000;
 
 export function LiveStatus({ apiUrl }: { apiUrl: string }) {
-  const [state, setState] = useState<State>('loading');
+  const [state, setState] = useState<State>(() =>
+    apiUrl ? 'loading' : 'unconfigured',
+  );
 
   useEffect(() => {
     if (!apiUrl) {
-      setState('down');
       return;
     }
 
@@ -32,6 +35,7 @@ export function LiveStatus({ apiUrl }: { apiUrl: string }) {
     const timeout = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
     const base = apiUrl.replace(/\/+$/, '');
 
+    setState('loading');
     fetch(`${base}/health/ready/`, { signal: controller.signal })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
       .then((payload) => {
