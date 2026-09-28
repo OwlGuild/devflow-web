@@ -44,7 +44,7 @@ const STATS = [
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
-  const apiUrl = process.env.DEVFLOW_API_URL ?? '';
+  const apiUrl = (process.env.DEVFLOW_API_URL ?? '').replace(/\/+$/, '');
 
   return (
     <div className='min-h-screen bg-slate-50 text-slate-900'>
@@ -71,7 +71,7 @@ export default function Home() {
             </a>
             <a
               className='rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100'
-              href='https://devflow-api-jtmi.onrender.com/health/ready/'
+              href={apiUrl ? `${apiUrl}/health/ready/` : '#'}
             >
               Open the API
             </a>
