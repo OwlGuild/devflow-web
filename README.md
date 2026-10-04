@@ -86,10 +86,10 @@ npm test
 ✓ src/components/FeatureCard.test.tsx (2 tests)
 ✓ src/components/BoardPreview.test.tsx (3 tests)
 ✓ src/components/SiteHeader.test.tsx (2 tests)
-✓ src/app/page.test.tsx (6 tests)
+✓ src/app/page.test.tsx (7 tests)
 
 Test Files  6 passed (6)
-     Tests  22 passed (22)
+     Tests  23 passed (23)
 ```
 
 ## Roadmap
