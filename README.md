@@ -1,3 +1,2 @@
 # devflow-web
-
-Minimal skeleton. Add real code locally with correct git identity.
+Next.js web client for DevFlow. Part of OwlGuild/DevFlow.
