@@ -1,10 +1,7 @@
-*.pyc
-__pycache__/
-.venv/
-.env
-.env.local
 node_modules/
 .next/
-dist/
+out/
+.env*
+!.env.example
 .DS_Store
 *.log
