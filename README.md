@@ -16,9 +16,12 @@ Next.js client for **DevFlow**, the open-source team task-management product. Co
 A task board lives or dies on how fast you can see state and act on it. The client is built
 around three rules:
 
-- **Nothing blocks the view.** Mutations update the list immediately; failures roll back.
-- **Persian is first-class.** Layout is written logical-first so RTL is not an afterthought.
-- **Live by default.** WebSocket events patch the store, so the board is never stale.
+- **The page says what actually runs.** Every claim on the home page maps to shipped code, and
+  the status pill probes `devflow-api`'s readiness endpoint from the browser.
+- **Components are tested, not eyeballed.** Each component has a Vitest test that fails if the
+  component breaks.
+- **CI is the gate.** Lint, production build, tests and a Docker build run on every push to
+  `main` and on every pull request.
 
 ## Stack
 
@@ -34,43 +37,59 @@ around three rules:
 ```bash
 git clone https://github.com/OwlGuild/devflow-web.git
 cd devflow-web
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-App: `http://localhost:3000`.
+App: `http://localhost:3000`. `DEVFLOW_API_URL` (server-side, read at request time) points the
+status pill at an API instance; Render sets it to the deployed one.
 
 ## Structure
 
 ```
 src/
   app/
-    layout.tsx         document shell and metadata
-    page.tsx           home
+    layout.tsx           document shell and metadata
+    page.tsx             home page (server component)
     page.test.tsx
   components/
-    StatusBadge.tsx    board status pill
+    SiteHeader.tsx       logo and navigation
+    SiteHeader.test.tsx
+    FeatureCard.tsx      one building block of the stack
+    FeatureCard.test.tsx
+    BoardPreview.tsx     planned board columns
+    BoardPreview.test.tsx
+    LiveStatus.tsx       client-side readiness probe
+    LiveStatus.test.tsx
+    StatusBadge.tsx      board status pill
     StatusBadge.test.tsx
-vitest.config.mts      test runner configuration
+vitest.config.mts        test runner configuration
 ```
 
 ## Testing
 
 ```bash
 npm test          # vitest run
+npm run lint
 npm run build     # production build, also runs in CI
 ```
 
-The suite covers component rendering and status variants: 6 tests, running in CI on every push.
+The suite covers every component — rendering, links, status variants and the readiness probe's
+success, failure and unconfigured paths:
 
 ```bash
 npm test
 
 ✓ src/components/StatusBadge.test.tsx (4 tests)
-✓ src/app/page.test.tsx (2 tests)
+✓ src/components/LiveStatus.test.tsx (5 tests)
+✓ src/components/FeatureCard.test.tsx (2 tests)
+✓ src/components/BoardPreview.test.tsx (3 tests)
+✓ src/components/SiteHeader.test.tsx (2 tests)
+✓ src/app/page.test.tsx (6 tests)
 
-Test Files  2 passed (2)
-     Tests  6 passed (6)
+Test Files  6 passed (6)
+     Tests  22 passed (22)
 ```
 
 ## Roadmap
@@ -89,7 +108,7 @@ Both maintainers of [OwlGuild](https://github.com/OwlGuild) commit here.
 | App routing, state, data fetching | [@AhmadGolbooee](https://github.com/AhmadGolbooee) |
 | UI components, design system, Tailwind | [@AhmadGolbooee](https://github.com/AhmadGolbooee) |
 | Client-side API contract | [@AhmadGolbooee](https://github.com/AhmadGolbooee) |
-| Live-update handling | shared with [@MarziehAkrami](https://github.com/MarziehAkrami) |
+| Realtime integration (planned) | shared with [@MarziehAkrami](https://github.com/MarziehAkrami) |
 | CI, Docker, docs | shared |
 
 ## Related
