@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import Home from './page';
 
 describe('Home', () => {
@@ -13,17 +13,44 @@ describe('Home', () => {
     ).toBeInTheDocument();
   });
 
-  it('links to the repository and the live API', () => {
-    render(<Home />);
-    expect(
-      screen.getByRole('link', { name: 'View the source' }),
-    ).toHaveAttribute('href', 'https://github.com/OwlGuild');
-    expect(
-      screen.getByRole('link', { name: 'Open the API' }),
-    ).toHaveAttribute(
-      'href',
-      'https://devflow-api-jtmi.onrender.com/health/ready/',
-    );
+  it('links to the repository and the configured live API', () => {
+    process.env.DEVFLOW_API_URL = 'https://devflow-api-jtmi.onrender.com';
+    try {
+      render(<Home />);
+      expect(
+        screen.getByRole('link', { name: 'View the source' }),
+      ).toHaveAttribute('href', 'https://github.com/OwlGuild');
+      expect(
+        screen.getByRole('link', { name: 'Open the API' }),
+      ).toHaveAttribute(
+        'href',
+        'https://devflow-api-jtmi.onrender.com/health/ready/',
+      );
+    } finally {
+      delete process.env.DEVFLOW_API_URL;
+    }
+  });
+
+  it('passes the configured API URL into the readiness probe', async () => {
+    process.env.DEVFLOW_API_URL = 'https://api.example.test';
+    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ status: 'ok', database: 'up' }),
+    } as Response);
+    try {
+      render(<Home />);
+      expect(await screen.findByTestId('live-status')).toHaveAttribute(
+        'data-state',
+        'ok',
+      );
+      expect(fetchSpy).toHaveBeenCalledWith(
+        'https://api.example.test/health/ready/',
+        expect.anything(),
+      );
+    } finally {
+      delete process.env.DEVFLOW_API_URL;
+      vi.restoreAllMocks();
+    }
   });
 
   it('lists the four shipped building blocks', () => {
