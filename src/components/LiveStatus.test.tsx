@@ -72,17 +72,16 @@ describe('LiveStatus', () => {
     );
   });
 
-  it('skips the probe when no API base URL is configured', async () => {
+  it('skips the probe and says so when no API base URL is configured', async () => {
     const fetchSpy = vi.spyOn(global, 'fetch');
 
     render(<LiveStatus apiUrl='' />);
 
-    await waitFor(() =>
-      expect(screen.getByTestId('live-status')).toHaveAttribute(
-        'data-state',
-        'down',
-      ),
+    expect(screen.getByTestId('live-status')).toHaveAttribute(
+      'data-state',
+      'unconfigured',
     );
+    expect(screen.getByText('API status not configured')).toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
